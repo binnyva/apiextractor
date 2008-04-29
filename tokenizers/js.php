@@ -1,7 +1,7 @@
 <?php
-require('../common.php');
+require('BaseTokenizer.php');
 
-class Tokenizer extends Base_Tokenizer {
+class Tokenizer extends BaseTokenizer {
 	public $language = 'javascript';
 	public $language_keywords = array(
 		'break'		=> 'T_BREAK',
@@ -37,6 +37,7 @@ class Tokenizer extends Base_Tokenizer {
 
 	/// Constructor
 	function __construct($contents) {
+		$this->language_code_flag = true;
 		parent::__construct($contents, 'javascript');
 	}
 	

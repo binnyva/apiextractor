@@ -1,7 +1,7 @@
 <?php
-require('Base_Tokenizer.php');
+require('BaseTokenizer.php');
 
-class Tokenizer extends Base_Tokenizer {
+class Tokenizer extends BaseTokenizer {
 	public $language = 'php';
 	public $language_keywords = array(
 		'abstract'	=> 'T_ABSTRACT',

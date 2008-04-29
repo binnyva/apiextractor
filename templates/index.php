@@ -1,13 +1,12 @@
 <?php 
 
-foreach($source->info['function'] as $func) {
+foreach($source->extractor->info['function'] as $func) {
 	showFunction($func);
 }
 
-foreach($source->info['class'] as $class_data) {
+foreach($source->extractor->info['class'] as $class_data) {
 	showClass($class_data);
 }
-
 
 
 // Functions
