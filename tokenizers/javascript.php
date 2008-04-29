@@ -1,94 +1,43 @@
 <?php
-require('Base_Tokenizer.php');
+require('../common.php');
 
 class Tokenizer extends Base_Tokenizer {
-	public $language = 'php';
+	public $language = 'javascript';
 	public $language_keywords = array(
-		'abstract'	=> 'T_ABSTRACT',
-		'array' 	=> 'T_ARRAY',
-		'as'		=> 'T_AS',
 		'break'		=> 'T_BREAK',
 		'case'		=> 'T_CASE',
 		'catch'		=> 'T_CATCH',
-		'class'		=> 'T_CLASS',
-		'clone'		=> 'T_CLONE',
-		'const'		=> 'T_CONST',
 		'continue'	=> 'T_CONTINUE',
-		'declare'	=> 'T_DECLARE',
 		'default'	=> 'T_DEFAULT',
-		'define'	=>	'T_DEFINE',
 		'do'		=> 'T_DO',
-		'echo'		=> 'T_ECHO',
 		'else'		=> 'T_ELSE',
-		'elseif'	=> 'T_ELSEIF',
-		'empty'		=> 'T_EMPTY',
-		'enddeclare'=> 'T_ENDDECLARE',
-		'endfor'	=> 'T_ENDFOR',
-		'endforeach'=> 'T_ENDFOREACH',
-		'endif'		=> 'T_ENDIF',
-		'endswitch'	=> 'T_ENDSWITCH',
-		'endwhile'	=> 'T_ENDWHILE',
 		'eval'		=> 'T_EVAL',
-		'exit'		=> 'T_EXIT',
-		'extends'	=> 'T_EXTENDS',
-		'final'		=> 'T_FINAL',
 		'for'		=> 'T_FOR',
-		'foreach'	=> 'T_FOREACH',
 		'function'	=> 'T_FUNCTION',
-		'global'	=> 'T_GLOBAL',
 		'if'		=> 'T_IF',
-		'implements'=> 'T_IMPLEMENTS',
-		'include'	=> 'T_INCLUDE',
-		'include_once'=> 'T_INCLUDE_ONCE',
-		'instanceof'=> 'T_INSTANCEOF',
-		'interface'	=> 'T_INTERFACE',
-		'isset'		=> 'T_ISSET',
-		'list'		=> 'T_LIST',
-		'and'		=> 'T_LOGICAL_AND',
-		'or'		=> 'T_LOGICAL_OR',
-		'xor'		=> 'T_LOGICAL_XOR',
 		'new'		=> 'T_NEW',
-		'print'		=> 'T_PRINT',
-		'private'	=> 'T_PRIVATE',
-		'public'	=> 'T_PUBLIC',
-		'protected'	=> 'T_PROTECTED',
-		'require'	=> 'T_REQUIRE',
-		'require_once'=> 'T_REQUIRE_ONCE',
 		'return'	=> 'T_RETURN',
-		'static'	=> 'T_STATIC',
 		'switch'	=> 'T_SWITCH',
 		'throw'		=> 'T_THROW',
 		'try'		=>	'T_TRY',
-		'unset'		=> 'T_UNSET',
-		'use'		=> 'T_USE',
 		'var'		=> 'T_VAR', 
 	);
+	
 	public $language_operators = array(
-		'<?php'		=>	'T_OPEN_TAG',				// Maintain this ordering.
-		'<?='		=>	'T_OPEN_TAG_WITH_ECHO',		//
-		'<?'		=>	'T_OPEN_TAG',				// - this one must come last among the '<?' three
-		'?>'		=>	'T_CLOSE_TAG',
-		
-		'->'		=>	'T_OBJECT_OPERATOR',
-		'#'			=> 	'T_COMMENT',
+		'.'			=>	'T_OBJECT_OPERATOR',
 		'//'		=>	'T_COMMENT',
-		'::'		=>	'T_DOUBLE_COLON',
 	);
 	public $language_regexps = array(
 		'line_beginning_char'	=> '\*'
 	);
 	public $language_tokens = array(
-		'T_VARIABLE_PREFIX'	=> '$',
 		'T_COMMENT'			=> '//',
 		'T_CLASS_SEPERATOR'	=> '::',
 	);
 
 	/// Constructor
 	function __construct($contents) {
-		$this->language_code_start	= array('T_OPEN_TAG','T_OPEN_TAG_WITH_ECHO');
-		$this->language_code_end	= array('T_CLOSE_TAG');
-		$this->language_code_flag	= false;
-		parent::__construct($contents, 'php');
+		parent::__construct($contents, 'javascript');
 	}
 	
 	function getNextToken() {
@@ -283,3 +232,4 @@ class Tokenizer extends Base_Tokenizer {
 		return $this->_tokenDetails($c, 'T_UNKNOWN');
 	}
 }
+

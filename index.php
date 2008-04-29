@@ -3,7 +3,7 @@ include('../../iframe/common.php');
 include('./Source.php');
 
 //$file = '/var/www/html/openjs/scripts/jslibrary/code/jsl_ajax.js';
-$file = 'data/Sql.php';
+$file = 'data/jsl_array.js';
 $source = new Source($file);
 
 /* */
