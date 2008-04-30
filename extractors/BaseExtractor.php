@@ -12,11 +12,11 @@ class BaseExtractor {
 		'tab_length'	=>	4
 	);
 	
-	private $tokenizer;
-	private $tokens = array();
-	private $_token_count = 0;
-	private $_documentation_block = '';
-	private $_used_documentations = array();
+	protected $tokenizer;
+	protected $tokens = array();
+	protected $_token_count = 0;
+	protected $_documentation_block = array();
+	protected $_used_documentations = array();
 	
 	/// The Construtor
 	function __construct($tokenizer) {
@@ -27,6 +27,16 @@ class BaseExtractor {
 		$this->info['class'] = array();
 		$this->info['variable'] = array();
 		
+		$this->findClasses();
+		// Get the functions in the file
+		//$this->findFunctions(); /// :TODO: find the functions outside the classes
+		
+	}
+	
+	/**
+	 * Search thru the tokens to find a class token
+	 */
+	function findClasses() {
 		$this->_token_count = count($this->tokens);
 		for($i=0; $i<$this->_token_count; $i++) {
 			$token	= $this->tokens[$i]['token'];
@@ -36,10 +46,7 @@ class BaseExtractor {
 				$this->findClassDetails($this->tokens[$i], $i);
 			}
 		}
-		// Get the functions in the file
-		//$this->findFunctions(); /// :TODO: find the functions outside the classes
-		
-	}
+	} 
 	
 	/**
 	 * Finds the class at the given token
@@ -55,11 +62,11 @@ class BaseExtractor {
 		$class_details['line'] = $token['line'];
 		
 		$related_documentation = $this->findDocumentationToken($i);
+		$class_details['name'] = $this->getName(array("Class", "Name"), $class_details['name']); //Get the name in the documentation - if any.
 		
 		$class_details['example'] = $this->getExample();
 		//:TODO: See, Link
 		$class_details['desc'] = $this->getDescription();
-		//dump($class_details);
 		
 		$class_ends_at_token = $this->findMatchingBrace($i);
 		
@@ -137,10 +144,12 @@ class BaseExtractor {
 	/// Finds the documentation for this token. Not perfect yet.
 	function findDocumentationToken($i) {
 		//Get the documentation...
-		$this->_documentation_block	= '';
+		$this->_documentation_block	= array();
 		
-		if($this->isDocumentationToken($i-1)) return $i-1;
+		if($this->isDocumentationToken($i)) return $i;
+		elseif($this->isDocumentationToken($i-1)) return $i-1;
 		elseif($this->isDocumentationToken($i+1)) return $i+1;
+		elseif(($this->tokens[$i-1]['token'] == '=' or $this->tokens[$i-1]['token'] == ':') and $this->isDocumentationToken($i-3)) return $i-3;
 		else {
 			//Find the next { - see if there a doc block after that.
 			$next_brace_at = $this->findNextBrace($i);
@@ -152,7 +161,7 @@ class BaseExtractor {
 	
 	/// Returns true if the token given as an argument is an unused documentation string.
 	function isDocumentationToken($token_index) {
-		if($this->tokens[$token_index]['token_type'] == 'T_DOC_COMMENT' // If the given token is documentation - and,
+		if(isset($this->tokens[$token_index]) and $this->tokens[$token_index]['token_type'] == 'T_DOC_COMMENT' // If the given token is documentation - and,
 					and !in_array($token_index-1, $this->_used_documentations)) { // it has not been used earlier
 			// :TODO: Move these regexps to the $tokenizer->language_regexps
 			$comments = preg_replace('/^\s*\/\*\*\s*\*/', '', $this->tokens[$token_index]['token']); //Remove the first /**
@@ -322,6 +331,8 @@ class BaseExtractor {
 		$ending_line = -1;
 		
 		for($i=0; $i<count($this->_documentation_block); $i++) {
+			if(!isset($this->_documentation_block[$i])) break;
+			
 			$l = $this->_documentation_block[$i];
 			if(preg_match("/$regexp/i", $l) and !$found) { #Find the section beginner
 				$found = 1;

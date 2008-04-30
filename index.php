@@ -5,7 +5,6 @@ include('./Source.php');
 //$file = 'data/jsl_array.js';
 $file = 'data/Sql.php';
 
-
 $source = new Source($file);
 
 /* */
