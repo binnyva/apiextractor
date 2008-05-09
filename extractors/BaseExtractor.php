@@ -5,7 +5,6 @@ class BaseExtractor {
 	public $info;
 	
 	///////////////////////////// Private Variables ////////////////////////
-	private $contents;
 	private $full_code_lines;
 	private $t;
 	private $options = array(
@@ -110,9 +109,9 @@ class BaseExtractor {
 	function addFunction($token, $index, $parent_class='') {
 		$function_details = array();
 		
-		$documentation = $this->getDocumentation($index);
+		$function_details['name']	= $this->getFunctionName($index);
+		if(!$function_details['name']) return; //No name, no continue
 		
-		$function_details['name']	= $this->tokens[$index+1]['token'];//:TODO: Get the name from the docs first - use that if present.
 		$function_details['type']	=  '';
 		
 		//Is this function a constructor?
@@ -131,6 +130,7 @@ class BaseExtractor {
  		//See, Link
  		
  		$function_details['desc'] = $this->getDescription();
+ 		if(stripos($function_details['desc'], '[IGNORE]') !== false) return; //Ignore this function
 
 		$function_ends_at_token = $this->tokens[$this->findMatchingBrace($index)];
 		
@@ -139,6 +139,20 @@ class BaseExtractor {
 
 		if(!$parent_class) $this->saveInfo('function', $function_details);
 		else return $function_details;
+	}
+	
+	/// Finds the name of the function - even if its hiding in the docs
+	function getFunctionName($index) {
+		$documentation = $this->getDocumentation($index);
+			
+		$function_name	= $this->tokens[$index+1]['token'];// Get the name from the code
+		
+		$function_name = $this->getName(array("Function", "Name"), $function_name); //Get it from the docs
+		
+		//If the function name is not valid,
+		if(!preg_match('/^[\w\$]+$/',$function_name)) return false; //Its propably an anoymous function.
+		
+		return $function_name;
 	}
 	
 	/// Finds the documentation for this token. Not perfect yet.
@@ -278,7 +292,7 @@ class BaseExtractor {
 	
 	/// Returns the $contents from index $from to $to
 	function getCode($from=0, $to=-1, $contents='') {
-		if(!$contents) $contents = $this->contents;
+		if(!$contents) $contents = $this->tokenizer->contents;
 		if($from === 0 and $to === -1) return $contents;
 
 		return substr($contents, $from, $to-$from);
@@ -366,7 +380,7 @@ class BaseExtractor {
 	
 	/// Get the argument details of the functions
 	function getArguments($index) {
-		$arg_text = $this->getSection("Arg(ument)?s?\\s*[\-:]");
+		$arg_text = $this->getSection("^\s*Arg(ument)?s?\\s*[\-:]");
 		$real_arguments = $this->getFormalArguments($index);
 		
 		if(!$arg_text and !$real_arguments) return array();
@@ -424,7 +438,7 @@ class BaseExtractor {
 			
 			$info['desc'] = $this->guessDescriptionIfEmpty($info);
 		
-			if($multiline_doc) $args[count($args)-1]['desc'] .= '<br />' . $info['desc']; //If its a multiline argument, add it to the previous description.
+			if($multiline_doc and count($args)) $args[count($args)-1]['desc'] .= '<br />' . $info['desc']; //If its a multiline argument, add it to the previous description.
 			else $args[] = $info;
 			//showInfo($info);
 		}
@@ -552,7 +566,7 @@ class BaseExtractor {
 			if(!trim($l)) continue;
 
 			$whitespaces_count = $this->getWhitespaceCount($l);
-			if($whitespaces_count > $normal_whitespaces_count) { #If there is more whitespaces than normal, it must me a continuation of the last line
+			if($whitespaces_count > $normal_whitespaces_count and $new_lines) { #If there is more whitespaces than normal, it must me a continuation of the last line
 				$new_lines[count($new_lines)-1] .= ' ' . $l;
 			} else {
 				$new_lines[] = $l;

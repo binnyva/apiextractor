@@ -1,12 +1,13 @@
 <?php
 abstract class BaseTokenizer {
+	public $contents = '';
+	
 	protected $whitespace = array("\n","\t","\r"," ");
 	protected $word_chars = array('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','0','1','2','3','4','5','6','7','8','9','_','$');
 	protected $operators	= array('+','-','*','/','%','&','++','--','=','+=','-=','*=','/=','%=','==','===','!=','!==','>','<','>=','<=','>>','<<','>>>','>>>=','>>=','<<=','&&','&=','|','||','!','!!',',',':','?','^','^=','|=');
 	
 	protected $position = 0;
 	protected $source_file;
-	protected $contents = '';
 	protected $last_token = '';
 	protected $last_token_type = '';
 	protected $length = 0;
