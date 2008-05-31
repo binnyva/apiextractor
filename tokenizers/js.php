@@ -32,7 +32,7 @@ class Tokenizer extends BaseTokenizer {
 	);
 	public $language_tokens = array(
 		'T_COMMENT'			=> '//',
-		'T_CLASS_SEPERATOR'	=> '::',
+		'T_CLASS_SEPERATOR'	=> '.',
 		'T_VARIABLE_PREFIX'	=> '',
 	);
 

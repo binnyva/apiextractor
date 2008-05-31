@@ -64,6 +64,7 @@ class BaseExtractor {
 		$class_details['name'] = $this->getName(array("Class", "Name"), $class_details['name']); //Get the name in the documentation - if any.
 		
 		$class_details['example'] = $this->getExample();
+		$class_details['args']	= $this->getArguments($i);
 		//:TODO: See, Link
 		$class_details['desc'] = $this->getDescription();
 		
