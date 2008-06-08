@@ -393,8 +393,10 @@ class BaseExtractor {
 			
 			$info = array();
 			$info['optional'] = false;
-			if(preg_match('/\[opt(ional)?\]/i', $text)) $info['optional'] = true; #If [optional] is present, that argument is optional
-			$text = preg_replace('/\[opt(ional)?\]/i','', $text);
+			if(preg_match('/\[opt(ional)?\]/i', $text)) {
+				$info['optional'] = true; #If [optional] is present, that argument is optional
+				$text = preg_replace('/\[opt(ional)?\]/i','', $text);
+			}
 			
 			$seperator = '';
 			
@@ -422,7 +424,7 @@ class BaseExtractor {
 				$info['desc'] = $info['name'] . ' ' . $info['desc'];
 				$info['name'] = '';
 			}
-
+			
 			//Try to find the default value if its an optional argument
 			if(stripos($info['desc'], 'default value is') !== false) {
 				preg_match('/default value is([^\.]+)/i', $info['desc'], $value_matches);
@@ -451,7 +453,6 @@ class BaseExtractor {
 				$args[$i] = array();
 				$args[$i]['name'] = $arg_name;
 			}
-			$args[$i]['optional'] = false;
 			if($default_value !== false) {
 				$args[$i]['optional'] = true;
 				if(!isset($args[$i]['default_value'])) $args[$i]['default_value'] = $default_value;
@@ -640,7 +641,7 @@ class BaseExtractor {
 	function text2html($text) {
 		$text = preg_replace(
 			'/([^\'\"\=\/]|^)(http:\/\/|(www.))([\w\.\-\/\\\=\?\%\+\&\:]+?)([\.\?])?(\s|$)/',
-			"$1<a rel='nofollow' href='http://$3$4'>http://$3$4</a>$5$6",
+			"$1<a href='http://$3$4'>http://$3$4</a>$5$6",
 			$text);
 		return $text;
 	}

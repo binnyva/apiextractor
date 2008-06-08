@@ -22,16 +22,19 @@ function showClass($class_data) {
 showExample($class_data['example']); 
 
 if($class_data['methods']) {
-	print "<h2>Methods</h2>\n<ul>";
+	print "<h2>Methods</h2>\n<ul>\n";
+	
 	foreach($class_data['methods'] as $func) {
+		$name = $func['name'];
+	
 		$link = "#function-" . strtolower((($class_data['name']) ? $class_data['name'] . '-' : '') . $func['name']); 
 		?>
-<li><a href="<?=$link?>"><?=$func['name']?><?php
+<li><a href="<?=$link?>"><?=$name?><?php
 	if($func['type'] == 'constructor') print " [Constructor]";
 ?></a></li>
-		<?php
+<?php
 	}
-	print "</ul>";
+	print "</ul>\n\n";
 	
 
 	foreach($class_data['methods'] as $func) {
@@ -85,14 +88,11 @@ function showFunction($func, $parent_class='') {
 <?php foreach($func['args'] as $arg) { ?>
 <dt><?=$arg['name']?></dt>
 <dd>
-<p><?=$arg['desc']?><br />
-
-<?php 
-if($arg['type']) print "<strong>Data Type: </strong> $arg[type]<br />";
+<p><?=$arg['desc']?><?php
+if($arg['type']) print "<br /><strong>Data Type: </strong> $arg[type]<br />";
 if($arg['optional']) {
-	print "<em>Optional Argument</em>";
+	print "<br /><em>Optional Argument</em>";
 	if(isset($arg['default_value'])) print " - if the argument is not provided, the function will use '$arg[default_value]' as the default value.";
-	print "<br />";
 }
 ?></p>
 </dd>
@@ -124,9 +124,9 @@ function showExample($example) {
 	if(!$example) return;
 	global $source;
 ?>
-	<h4>Example</h4>
-	
-	<?php 
+<h4>Example</h4>
+
+<?php 
 	if(strpos($example, "<pre>") === false) print '<pre><code class="' . $source->language . '">' . $example . '</code></pre>';
 	else print $example;
 }
