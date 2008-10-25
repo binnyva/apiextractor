@@ -2,19 +2,19 @@
 include('../../iframe/common.php');
 include('./Source.php');
 
-$file = '/var/www/html/Sites/openjs/openjs.com/scripts/ui/context_menu/context_menu.js';
+if(isset($_REQUEST['action']) and $_REQUEST['action'] == 'Generate Docs') {
+	list($file, $result) = upload('code', 'data');
+	
+	if($file) {
+		$source = new Source('data/'. $file);
+		$format = isset($_REQUEST['format']) ? $_REQUEST['format'].'.php' : 'html.php';
+		if($format == 'wiki.php') $template->options['insert_layout'] = false;
+		
+		render($format);
+		exit;
+	} else {
+		showMessage("Cannot Upload file: $result", '', 'error');
+	}
+}
 
-$source = new Source($file);
-
-/* */
-//ob_start();
-$format = isset($_REQUEST['format']) ? $_REQUEST['format'].'.php' : '';
-if($format == 'wiki.php') $template->options['insert_layout'] = false;
-
-render($format);
-//$contents = ob_get_contents();
-//ob_end_clean();
-
-// Write this to a file?
-// print $contents;
-// */
+render();
